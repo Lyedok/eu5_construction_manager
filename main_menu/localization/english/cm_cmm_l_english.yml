@@ -7,13 +7,16 @@
  cm__general_name: "General"
  ## General (general) Group
  cm__general__general_name: "$cm__general_name$" # NO-TRANSLATE
- cm__general__general_desc: "The Gold Reserve, the Overbuild Limit, and the master pause."
+ cm__general__general_desc: "The Gold Reserve, the Overbuild Limit, the Max Worker Deficit, and the master pause."
  cm__minimum_gold_name: "Gold Reserve"
  cm__minimum_gold_desc: "No automation spends your treasury below this amount."
  cm__minimum_gold_format: "[CMMV('cm__minimum_gold')]@gold!" # NO-TRANSLATE
  cm__allowed_building_overbuild_levels_name: "Overbuild Limit"
  cm__allowed_building_overbuild_levels_desc: "How many total building levels a location may exceed its Supported Building Levels cap by before new construction stops being queued there. Food, Governors, and buildings in other countries' locations are exempt. At zero, it won't allow any overbuilding. At 200+, there is no limit."
  cm__allowed_building_overbuild_levels_format: "[CMMV('cm__allowed_building_overbuild_levels')][Select_CString(GreaterThanOrEqualTo_CFixedPoint(CMMV('cm__allowed_building_overbuild_levels'), CMMMapValue('cmm_max', 'cm__allowed_building_overbuild_levels')), '+', '')]" # NO-TRANSLATE
+ cm__max_worker_deficit_name: "Max Worker Deficit"
+ cm__max_worker_deficit_desc: "How long a location may take to grow into the workers a building needs. A level is only queued where the location's spare people of that kind, plus what it has been gaining each month, cover the jobs within this many years. At zero, the workers have to be there already. At 20y+, there is no limit. Whatever this is set to, a location that is not gaining that kind of worker at all is still never built on: no number of years covers a rate of nothing."
+ cm__max_worker_deficit_format: "[CMMV('cm__max_worker_deficit')]y[Select_CString(GreaterThanOrEqualTo_CFixedPoint(CMMV('cm__max_worker_deficit'), CMMMapValue('cmm_max', 'cm__max_worker_deficit')), '+', '')]" # NO-TRANSLATE
  cm__pause_auto_expand_name: "Pause Automation"
  cm__pause_auto_expand_desc: "Pauses every automation feature this mod adds."
 
@@ -580,6 +583,7 @@
  cm__expand_metric: "cm__expand_metric"
  cm__minimum_gold: "cm__minimum_gold"
  cm__allowed_building_overbuild_levels: "cm__allowed_building_overbuild_levels"
+ cm__max_worker_deficit: "cm__max_worker_deficit"
  cm__pause_auto_expand: "cm__pause_auto_expand"
  cm__ab_custom__enabled: "cm__ab_custom__enabled"
  cm__auto_build_list: "cm__auto_build_list"

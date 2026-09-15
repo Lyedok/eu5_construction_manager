@@ -295,7 +295,7 @@ cm_ab_core_target_met = {
 
 # Root is the location, expects scope:cm_building_type and scope:cm_country. The pop half of
 # cm_ab_core_type_room, named so the probe and the skip lines can report it on its own; staging
-# reads the room itself, which carries this. Dropping the six-year projection
+# reads the room itself, which carries this. Dropping the promotion projection
 # cm_location_has_enough_pops_available applies is deliberate and stays confined to this
 # category - a location short of one of the four core construction goods is often exactly the
 # one whose pops are furthest behind, and those goods block every other build when they run out.

@@ -85,6 +85,14 @@
  cm_txt_dbg_run_category_desc: "Works this category now, by itself, instead of waiting for the month to turn. It spends what is left of its share, so a category that has already spent the month builds nothing. Pause Automation does not hold it back."
  cm_txt_tt_sea_zone: "[ROOT.GetLocation.GetName] is a sea zone."
 
+ # Note to translators: these make up "Location has enough Peasants now or gains enough within
+ # 6 years (unemployed: 1,200, growth buffer: 800)". The number is the player's Max Worker
+ # Deficit setting, and "eventually" replaces the span at its no-limit maximum.
+ cm_txt_pops_window_any: "eventually"
+ cm_txt_pops_window_years: "within [CMMV('cm__max_worker_deficit')|0] years"
+ cm_txt_growth_buffer: "growth buffer"
+ cm_txt_pops_window: "[SelectLocalization(GreaterThanOrEqualTo_CFixedPoint(CMMV('cm__max_worker_deficit'), CMMMapValue('cmm_max', 'cm__max_worker_deficit')), 'cm_txt_pops_window_any', 'cm_txt_pops_window_years')]" # NO-TRANSLATE
+
  # NO-TRANSLATE BELOW
  CM_AUTO_EXPAND_REQ_BLD_MIN_INCOME: "$cm_txt_req_bld_min_income$ ($cm_txt_currently$ [GuiScope.SetRoot(Building.GetLocation.MakeScope).AddScope('cm_building_type', Building.GetType.MakeScope).AddScope('cm_income', MakeScopeValue(GetBuildingTypeIncomeToOwnerInLocation(Building.GetType, Building.GetLocation))).AddScope('cm_profit', MakeScopeValue(GetBuildingTypeProfitInLocation(Building.GetType, Building.GetLocation))).ScriptValue('cm_bld_income_value')|2]/[GetPlayer.MakeScope.GetVariableFromVariableMap('cm_priority_min_profit', MakeScopeFlag('cm_feature_auto_expand_buildings')).GetValue|2]@gold!)"
  CM_AUTO_EXPAND_REQ_BLD_MIN_INCOME_BT: "$cm_txt_req_bld_min_income$ ($cm_txt_currently$ [GetBuildingTypeIncomeToOwnerInLocation(BuildingType.Self, Location.Self)|2]/[GetPlayer.MakeScope.GetVariableFromVariableMap('cm_priority_min_profit', MakeScopeFlag('cm_feature_auto_expand_buildings')).GetValue|2]@gold!)"
@@ -100,8 +108,8 @@
  CM_AUTO_EXPAND_REQ_BLD_PROFITABLE_OR_SUBSIDIZED_BT: "Any building of this type already here makes at least [Location.MakeScope.ScriptValue('cm_min_profit_per_level')|2]@gold! per level, or is subsidized"
  CM_AUTO_EXPAND_REQ_BLD_OPEN: "Building is open"
  CM_AUTO_EXPAND_REQ_BLD_NO_MISSING_GOODS: "Building doesn't lack any goods"
- CM_AUTO_EXPAND_REQ_BLD_POPS: "Location has enough [Building.GetType.GetPopType.GetName] now or gains enough within six years (unemployed: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).AddScope('cm_building_type', Building.GetType.MakeScope).ScriptValue('cm_location_unemployed_for_building_type'), '(CFixedPoint)1000')|0+=], 6-year growth buffer: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).AddScope('cm_building_type', Building.GetType.MakeScope).ScriptValue('cm_location_promotion_buffer_slack'), '(CFixedPoint)1000')|0+=])"
- CM_AUTO_EXPAND_REQ_BLD_POPS_BT: "Location has enough [BuildingType.GetPopType.GetName] now or gains enough within six years (unemployed: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).AddScope('cm_building_type', BuildingType.MakeScope).ScriptValue('cm_location_unemployed_for_building_type'), '(CFixedPoint)1000')|0+=], 6-year growth buffer: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).AddScope('cm_building_type', BuildingType.MakeScope).ScriptValue('cm_location_promotion_buffer_slack'), '(CFixedPoint)1000')|0+=])"
+ CM_AUTO_EXPAND_REQ_BLD_POPS: "Location has enough [Building.GetType.GetPopType.GetName] now or gains enough $cm_txt_pops_window$ (unemployed: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).AddScope('cm_building_type', Building.GetType.MakeScope).ScriptValue('cm_location_unemployed_for_building_type'), '(CFixedPoint)1000')|0+=], $cm_txt_growth_buffer$: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).AddScope('cm_building_type', Building.GetType.MakeScope).ScriptValue('cm_location_promotion_buffer_slack'), '(CFixedPoint)1000')|0+=])"
+ CM_AUTO_EXPAND_REQ_BLD_POPS_BT: "Location has enough [BuildingType.GetPopType.GetName] now or gains enough $cm_txt_pops_window$ (unemployed: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).AddScope('cm_building_type', BuildingType.MakeScope).ScriptValue('cm_location_unemployed_for_building_type'), '(CFixedPoint)1000')|0+=], $cm_txt_growth_buffer$: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).AddScope('cm_building_type', BuildingType.MakeScope).ScriptValue('cm_location_promotion_buffer_slack'), '(CFixedPoint)1000')|0+=])"
  CM_AUTO_EXPAND_REQ_FOOD_WORKERS: "Location has no food production waiting on workers"
  CM_AUTO_EXPAND_REQ_BLD_LEVELS: "Location has Supported Building Levels left     [SelectLocalization(GreaterThanOrEqualTo_CFixedPoint(CMMV('cm__allowed_building_overbuild_levels'), CMMMapValue('cmm_max', 'cm__allowed_building_overbuild_levels')), 'CM_AUTO_EXPAND_REQ_BLD_LEVELS_NO_LIMIT', 'CM_AUTO_EXPAND_REQ_BLD_LEVELS_COUNTS')]"
  CM_AUTO_EXPAND_REQ_BLD_LEVELS_NO_LIMIT: "(no overbuild limit)"
@@ -152,7 +160,7 @@
  CM_AUTO_EXPAND_REQ_RGO_ENABLED: "RGO auto-expand feature is enabled"
  CM_AUTO_EXPAND_REQ_RGO_RESEARCHED: "RGO is researched"
  CM_AUTO_EXPAND_REQ_RGO_NOT_MAX: "RGO is not max level already"
- CM_AUTO_EXPAND_REQ_RGO_POPS: "Location has enough [ShowPopTypeName('laborers')] and/or [ShowPopTypeName('slaves')] now or gains enough within six years (available: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).ScriptValue('cm_location_laborers_or_slaves_available'), '(CFixedPoint)1000')|0+=], 6-year growth buffer: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).ScriptValue('cm_location_rgo_promotion_buffer_slack'), '(CFixedPoint)1000')|0+=])"
+ CM_AUTO_EXPAND_REQ_RGO_POPS: "Location has enough [ShowPopTypeName('laborers')] and/or [ShowPopTypeName('slaves')] now or gains enough $cm_txt_pops_window$ (available: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).ScriptValue('cm_location_laborers_or_slaves_available'), '(CFixedPoint)1000')|0+=], $cm_txt_growth_buffer$: [Multiply_CFixedPoint(GuiScope.SetRoot(Location.MakeScope).ScriptValue('cm_location_rgo_promotion_buffer_slack'), '(CFixedPoint)1000')|0+=])"
  CM_AUTO_EXPAND_REQ_RGO_DISCOUNT: "RGO meets minimum construction discount"
  CM_AUTO_EXPAND_REQ_RGO_GOLD: "Enough gold available (have [GetPlayer.GetCurrencyValue('gold')|0]@gold!, need [GuiScope.AddScope('cm_location', Location.MakeScope).AddScope('cm_country', GetPlayer.MakeScope).ScriptValue('cm_expected_gold_available_for_rgo_auto_expand')|0]@gold!)"
  # NO-TRANSLATE BELOW
