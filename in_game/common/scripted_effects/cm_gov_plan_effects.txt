@@ -108,14 +108,18 @@ cm_gov_reorg_try_start = {
 			cm_pf_river_data_is_current = yes
 			NOT = { has_global_variable = cm_gov_token }
 			cm_gov_no_finder_run_in_flight = yes
+			# The income that says a country is strong enough to be moving governors around.
+			OR = {
+				cm_ln_is_active = yes
+				monthly_income_total >= @cm_gov_income_start
+			}
 			OR = {
 				AND = {
 					OR = {
 						# A lucky nation waits for the twenty-fifth year of the grand campaign,
 						# which starts 1337.4.1 (START_DATE,
 						# loading_screen/common/defines/00_defines.txt:2), or for the income that
-						# says it is strong enough sooner. The player turned the category on, so
-						# their first run is due from that month.
+						# says it is strong enough sooner. The player's bar is the income above.
 						cm_ln_is_active = no
 						current_date >= 1362.1.1
 						monthly_income_total >= @cm_gov_income_start

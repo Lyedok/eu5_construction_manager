@@ -66,9 +66,8 @@ cm_dbg_rotate_slice = {
 	}
 }
 
-# Starts a governor plan. The readiness half of cm_gov_reorg_try_start's start reason passes
-# outright for a human, so the two cooldowns are the whole of what holds one back; peace, a
-# capital, a current river harvest and the free cm_gov_token still gate the search itself.
+# Starts a governor plan ahead of its cadence. The income bar, peace, a capital, a current river
+# harvest and the free cm_gov_token still gate the run.
 # The category's own toggles are honoured because cm_ab_monthly_budget reads them to advance
 # the plan, so a run started past them would stall holding the global token.
 # Root is the country.

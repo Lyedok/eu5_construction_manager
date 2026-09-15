@@ -43,3 +43,40 @@ cm_megalopolis_upgrade_parity_factor = {
 # before the GUI scorer runs the real engine check. Kept below vanilla's megalopolis pop allow of
 # 400 (in_game/common/location_ranks/00_default.txt, megalopolis) so a mod lowering it still stages.
 cm_megalopolis_stage_min_population = 200
+
+# Vanilla's city rank population allow: in_game/common/location_ranks/00_default.txt, city.
+@cm_urbanize_city_population = 30
+
+# Every RGO at or under this price shares the first tier, so the ladder starts there.
+@cm_urbanize_first_tier = 2
+
+# Wide enough that control, a 0-1 fraction, can never reach the next tier's band.
+@cm_urbanize_tier_stride = 10
+
+# Expects scope:cm_country. The Rural to Town minimum population. The setting's own maximum is the
+# city floor, which is also its registered default, so that is the fallback while it is absent.
+cm_get_urbanize_min_population = {
+	value = @cm_urbanize_city_population
+	if = {
+		limit = { scope:cm_country = { exists = var:cm_auto_urbanize_min_population } }
+		value = scope:cm_country.var:cm_auto_urbanize_min_population
+	}
+}
+
+# Root is the location. The location's RGO price rounded up into whole-number tiers. A location with no RGO
+# reads 0 and takes the first tier.
+cm_location_rgo_price_tier = {
+	value = cm_location_rgo_market_value
+	ceiling = yes
+	min = @cm_urbanize_first_tier
+}
+
+# Root is the location. Urbanize staging order: cheapest RGO tier first, highest control within a
+# tier. ordered_ iterators sort high to low, so the tier is subtracted.
+cm_urbanize_tier_order = {
+	value = max_control
+	subtract = {
+		value = cm_location_rgo_price_tier
+		multiply = @cm_urbanize_tier_stride
+	}
+}

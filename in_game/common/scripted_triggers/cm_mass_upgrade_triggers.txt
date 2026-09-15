@@ -11,7 +11,7 @@ cm_location_pop_at_or_near_cap = {
 cm_location_can_mass_upgrade_to_city = {
 	AND = {
 		location_rank = location_rank:town
-		population >= 30
+		population >= @cm_urbanize_city_population
 		NOT = { cm_location_rgo_blocks_urbanize = yes }
 		modifier:cannot_upgrade_location = no
 		NOT = { has_building = building_type:cm_upgrade_town_to_city_building }
@@ -27,7 +27,7 @@ cm_location_can_mass_upgrade_to_town = {
 	AND = {
 		location_rank = location_rank:rural_settlement
 		OR = {
-			population >= 30
+			population >= cm_get_urbanize_min_population
 			cm_location_pop_at_or_near_cap = yes
 		}
 		NOT = { cm_location_rgo_blocks_urbanize = yes }

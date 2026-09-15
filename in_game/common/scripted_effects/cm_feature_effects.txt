@@ -1065,7 +1065,8 @@ cm_run_auto_food = {
 # --- Auto Urbanize ---
 # Promotes location ranks: towns to cities, and rural settlements to towns, and takes
 # do-not-urbanize locations back down to rural. Each pass is gated by its own sub-toggle
-# on the Urbanize tab.
+# on the Urbanize tab. Staging order is the drain order, and the drain stops on a gold-only
+# block, so the treasury saves for a city rather than founding a town behind it.
 cm_run_auto_urbanize = {
 	if = {
 		limit = { exists = var:cm_deurbanize }
@@ -1079,7 +1080,7 @@ cm_run_auto_urbanize = {
 		limit = { exists = var:cm_urbanize_town_to_city }
 		ordered_in_list = {
 			variable = cm_slice_locations
-			order_by = max_control
+			order_by = cm_urbanize_tier_order
 			max = cm_max_guess_at_number_of_locations
 			check_range_bounds = no
 			save_scope_as = cm_location
@@ -1087,15 +1088,34 @@ cm_run_auto_urbanize = {
 			cm_stage_urbanize_candidate = { bt = cm_upgrade_town_to_city_building }
 		}
 	}
+	# A rural settlement already carrying a city's population is one rank step short of a city, so
+	# it is founded ahead of the smaller ones whatever the minimum population is set to.
 	if = {
 		limit = { exists = var:cm_urbanize_rural_to_town }
 		ordered_in_list = {
 			variable = cm_slice_locations
-			order_by = max_control
+			order_by = cm_urbanize_tier_order
 			max = cm_max_guess_at_number_of_locations
 			check_range_bounds = no
 			save_scope_as = cm_location
-			limit = { cm_ln_location_proximity_ok = yes cm_location_can_mass_upgrade_to_town = yes }
+			limit = {
+				population >= @cm_urbanize_city_population
+				cm_ln_location_proximity_ok = yes
+				cm_location_can_mass_upgrade_to_town = yes
+			}
+			cm_stage_urbanize_candidate = { bt = cm_upgrade_rural_to_town_building }
+		}
+		ordered_in_list = {
+			variable = cm_slice_locations
+			order_by = cm_urbanize_tier_order
+			max = cm_max_guess_at_number_of_locations
+			check_range_bounds = no
+			save_scope_as = cm_location
+			limit = {
+				population < @cm_urbanize_city_population
+				cm_ln_location_proximity_ok = yes
+				cm_location_can_mass_upgrade_to_town = yes
+			}
 			cm_stage_urbanize_candidate = { bt = cm_upgrade_rural_to_town_building }
 		}
 	}

@@ -921,6 +921,24 @@ cm_register_cmf_mod = {
 		alias = cm_urbanize_rural_to_town
 	}
 
+	# Bounded by the two vanilla rank population allows in
+	# in_game/common/location_ranks/00_default.txt: town's 5 at the bottom, city's 30 at the top,
+	# above which every rural settlement is already on the city side of the order.
+	cmm_register_slider_setting = {
+		mod_id = cm
+		setting_id = auto_urbanize_min_population
+		tab_id = auto_urbanize
+		group_id = auto_urbanize
+		default_value = 30
+		min_value = 5
+		max_value = 30
+		step_value = 1
+	}
+	cmm_sync_setting_alias = {
+		setting = cm__auto_urbanize_min_population
+		alias = cm_auto_urbanize_min_population
+	}
+
 	cmm_register_bool_setting = {
 		mod_id = cm
 		setting_id = urbanize_city_to_megalopolis
@@ -2348,6 +2366,12 @@ cm_handle_cmf_callback = {
 			cmm_sync_bool_alias = {
 				setting = cm__urbanize_rural_to_town
 				alias = cm_urbanize_rural_to_town
+			}
+		}
+		flag:cm__auto_urbanize_min_population = {
+			cmm_sync_setting_alias = {
+				setting = cm__auto_urbanize_min_population
+				alias = cm_auto_urbanize_min_population
 			}
 		}
 		flag:cm__urbanize_city_to_megalopolis = {
