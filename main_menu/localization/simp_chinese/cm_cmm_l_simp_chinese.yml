@@ -71,6 +71,7 @@
  cm__auto_build_list_i19_name: "@zhixian! [ShowBuildingTypeName('zhixian')]"
  cm__auto_build_list_i20_name: "@tambo! [ShowBuildingTypeName('tambo')]"
  cm__auto_build_list_i21_name: "@dock! [ShowBuildingTypeName('dock')]"
+ cm__auto_build_list_i22_name: "@village_granary! [ShowBuildingTypeName('village_granary')]"
  cm__auto_build_list__enabled_name: "已启用"
  cm__auto_build_list__enabled_desc: "切换该建筑类型的自动建造。"
  cm__auto_build_list__in_subjects_name: "从属国"

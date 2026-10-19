@@ -84,6 +84,7 @@
  cm__auto_build_list_i19_name: "@zhixian! [ShowBuildingTypeName('zhixian')]"
  cm__auto_build_list_i20_name: "@tambo! [ShowBuildingTypeName('tambo')]"
  cm__auto_build_list_i21_name: "@dock! [ShowBuildingTypeName('dock')]"
+ cm__auto_build_list_i22_name: "@village_granary! [ShowBuildingTypeName('village_granary')]"
  cm__auto_build_list__enabled_name: "Enabled"
  cm__auto_build_list__enabled_desc: "Toggle auto-building for this building type."
  cm__auto_build_list__in_subjects_name: "Subjects"

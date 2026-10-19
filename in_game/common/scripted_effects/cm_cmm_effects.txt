@@ -117,7 +117,7 @@ cm_register_cmf_mod = {
 		mod_id = cm
 		setting_id = auto_build_list
 		tab_id = auto_build
-		item_count = 21
+		item_count = 22
 		is_ordered = 1
 	}
 
@@ -266,6 +266,13 @@ cm_register_cmf_mod = {
 		setting_id = auto_build_list
 		item = 21
 		value = building_type:dock
+	}
+
+	cmm_set_list_item_value = {
+		mod_id = cm
+		setting_id = auto_build_list
+		item = 22
+		value = building_type:village_granary
 	}
 
 	cmm_register_list_bool_field = {
@@ -420,6 +427,12 @@ cm_register_cmf_mod = {
 		setting_id = auto_build_list
 		field_id = min_rgos
 		item = 21
+	}
+	cmm_disable_list_field_for_item = {
+		mod_id = cm
+		setting_id = auto_build_list
+		field_id = min_rgos
+		item = 22
 	}
 	# Auto-Food (auto_food) Tab
 	## Auto-Food RGO Types (auto_food_list) Group
