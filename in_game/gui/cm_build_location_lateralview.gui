@@ -669,22 +669,22 @@
 					visible = "[LocationToBuildItem.GetBuildingType.IsProducing]"
 					margin = { 5 0 }
 					widget = { #profit
-						size = { 60 39 }
-						hbox = { #built
+						size = { 60 45 }
+						vbox = { #built
 							visible = "[And(LocationToBuildItem.ShowProfit, LocationToBuildItem.HasConstructedBuildingLevels)]"
 							expand = {}
 							datacontext = "[LocationToBuildItem.GetBuildingType]"
 							vbox = {  #profitable
 								visible = "[GreaterThan_CFixedPoint(Building.GetProfit, '(CFixedPoint)0')]"
-								spacing = 3
+								spacing = 0
 								tooltipwidget = {
 									using = BuildingProfit_Tooltip
 								}
 								text_single = {
-									size = { 60 18 }
+									size = { 60 15 }
 									align = nobaseline|right
 									autoresize = no
-									fontsize = 14
+									fontsize = 13
 									raw_text = "+[Building.GetProfitPerLevel|2]@wealth!"
 									sort_by_highlight = {
 										size = { 105% 100% }
@@ -692,10 +692,10 @@
 									}
 								}
 								text_single = {
-									size = { 60 18 }
+									size = { 60 15 }
 									align = nobaseline|right
 									autoresize = no
-									fontsize = 14
+									fontsize = 13
 									raw_text = "[Building.GetIncomeToOwnerPerLevel|+=2]@income!"
 									sort_by_highlight = {
 										size = { 105% 100% }
@@ -705,8 +705,8 @@
 							}
 							text_single = { #unprofitable and not subsidized
 								visible = "[And(LessThanOrEqualTo_CFixedPoint(Building.GetProfit, '(CFixedPoint)0'), Not(Building.IsSubsidized))]"
-								maximumsize = { 60 18 }
-								fontsize = 14
+								maximumsize = { 60 15 }
+								fontsize = 13
 								raw_text = "[Building.GetProfitPerLevel|+=2]@wealth!"
 								sort_by_highlight = {
 									size = { 105% 100% }
@@ -718,8 +718,8 @@
 							}
 							text_single = { # subsidized
 								visible = "[And(LessThanOrEqualTo_CFixedPoint(Building.GetProfit, '(CFixedPoint)0'), Building.IsSubsidized)]"
-								maximumsize = { 60 18 }
-								fontsize = 14
+								maximumsize = { 60 15 }
+								fontsize = 13
 								raw_text = "#L [Building.GetProfitPerLevel|2]#!@wealth!"
 								sort_by_highlight = {
 									size = { 105% 100% }
@@ -729,9 +729,41 @@
 									using = BuildingProfit_Tooltip
 								}
 							}
+
+							widget = { # CM: return on investment
+								size = { 60 15 }
+								datacontext = "[LocationToBuildItem.GetBuildingType]"
+								tooltipwidget = { using = glorpUI_building_roi_tooltip }
+								text_single = {
+									size = { 60 15 }
+									autoresize = no
+									align = nobaseline|right
+									fontsize = 13
+									default_format = "#color_green"
+									visible = "[And(And(GreaterThan_CFixedPoint(GetBuildOrExpandBuildingCost(BuildingType.Self, Location.Self), '(CFixedPoint)0'), GreaterThan_CFixedPoint(Select_CFixedPoint(Player.MakeScope.GetVariable('roiUseProfit').IsSet, Building.GetProfitPerLevel, Building.GetIncomeToOwnerPerLevel), '(CFixedPoint)0')), Player.MakeScope.GetVariable('roiUseMonths').IsSet)]"
+									text = "GLORP_UI_BL_ROI_MONTHS_VALUE"
+								}
+								text_single = {
+									size = { 60 15 }
+									autoresize = no
+									align = nobaseline|right
+									fontsize = 13
+									default_format = "#color_green"
+									visible = "[And(And(GreaterThan_CFixedPoint(GetBuildOrExpandBuildingCost(BuildingType.Self, Location.Self), '(CFixedPoint)0'), GreaterThan_CFixedPoint(Select_CFixedPoint(Player.MakeScope.GetVariable('roiUseProfit').IsSet, Building.GetProfitPerLevel, Building.GetIncomeToOwnerPerLevel), '(CFixedPoint)0')), Not(Player.MakeScope.GetVariable('roiUseMonths').IsSet))]"
+									text = "GLORP_UI_BL_ROI_YEARS_VALUE"
+								}
+								text_single = {
+									size = { 60 15 }
+									autoresize = no
+									align = nobaseline|right
+									fontsize = 13
+									visible = "[Not(And(GreaterThan_CFixedPoint(GetBuildOrExpandBuildingCost(BuildingType.Self, Location.Self), '(CFixedPoint)0'), GreaterThan_CFixedPoint(Select_CFixedPoint(Player.MakeScope.GetVariable('roiUseProfit').IsSet, Building.GetProfitPerLevel, Building.GetIncomeToOwnerPerLevel), '(CFixedPoint)0')))]"
+									raw_text = "— @efficiency!"
+								}
+							}
 						}
 	
-						hbox = { #unbuilt
+						vbox = { #unbuilt
 							visible = "[And(LocationToBuildItem.ShowProfit, Not(LocationToBuildItem.HasConstructedBuildingLevels))]"
 							expand = {}
 							vbox = {
@@ -741,10 +773,10 @@
 								}
 								text_single = {
 									visible = "[Not(LessThan_CFixedPoint(GetBuildingTypeProfitInLocation(BuildingType.Self, Location.Self), '(CFixedPoint)0'))]"
-									size = { 60 18 }
+									size = { 60 15 }
 									align = nobaseline|right
 									autoresize = no
-									fontsize = 14
+									fontsize = 13
 									raw_text = "+[GetBuildingTypeProfitInLocation(BuildingType.Self, Location.Self)|2]@wealth!"
 									sort_by_highlight = {
 										size = { 105% 100% }
@@ -753,10 +785,10 @@
 								}
 								text_single = {
 									visible = "[LessThan_CFixedPoint(GetBuildingTypeProfitInLocation(BuildingType.Self, Location.Self), '(CFixedPoint)0')]"
-									size = { 60 18 }
+									size = { 60 15 }
 									align = nobaseline|right
 									autoresize = no
-									fontsize = 14
+									fontsize = 13
 									raw_text = "[GetBuildingTypeProfitInLocation(BuildingType.Self, Location.Self)|+=2]@wealth!"
 									sort_by_highlight = {
 										size = { 105% 100% }
@@ -771,10 +803,10 @@
 	
 								text_single = {
 									visible = "[Not(LessThan_CFixedPoint(GetBuildingTypeProfitInLocation(BuildingType.Self, Location.Self), '(CFixedPoint)0'))]"
-									size = { 60 18 }
+									size = { 60 15 }
 									align = nobaseline|right
 									autoresize = no
-									fontsize = 14
+									fontsize = 13
 									raw_text = "[GetBuildingTypeIncomeToOwnerInLocation(BuildingType.Self, Location.Self)|+=<2]@income!"
 									sort_by_highlight = {
 										size = { 105% 100% }
@@ -782,6 +814,39 @@
 									}
 								}
 
+							}
+
+							widget = { # CM: return on investment
+								size = { 60 15 }
+								datacontext = "[LocationToBuildItem.GetBuildingType]"
+								datacontext = "[LocationToBuildItem.GetLocation]"
+								tooltipwidget = { using = glorpUI_building_type_roi_tooltip }
+								text_single = {
+									size = { 60 15 }
+									autoresize = no
+									align = nobaseline|right
+									fontsize = 13
+									default_format = "#color_green"
+									visible = "[And(And(GreaterThan_CFixedPoint(GetBuildOrExpandBuildingCost(BuildingType.Self, Location.Self), '(CFixedPoint)0'), GreaterThan_CFixedPoint(Select_CFixedPoint(Player.MakeScope.GetVariable('roiUseProfit').IsSet, GetBuildingTypeProfitInLocation(BuildingType.Self, Location.Self), GetBuildingTypeIncomeToOwnerInLocation(BuildingType.Self, Location.Self)), '(CFixedPoint)0')), Player.MakeScope.GetVariable('roiUseMonths').IsSet)]"
+									text = "GLORP_UI_BL_BT_ROI_MONTHS_VALUE"
+								}
+								text_single = {
+									size = { 60 15 }
+									autoresize = no
+									align = nobaseline|right
+									fontsize = 13
+									default_format = "#color_green"
+									visible = "[And(And(GreaterThan_CFixedPoint(GetBuildOrExpandBuildingCost(BuildingType.Self, Location.Self), '(CFixedPoint)0'), GreaterThan_CFixedPoint(Select_CFixedPoint(Player.MakeScope.GetVariable('roiUseProfit').IsSet, GetBuildingTypeProfitInLocation(BuildingType.Self, Location.Self), GetBuildingTypeIncomeToOwnerInLocation(BuildingType.Self, Location.Self)), '(CFixedPoint)0')), Not(Player.MakeScope.GetVariable('roiUseMonths').IsSet))]"
+									text = "GLORP_UI_BL_BT_ROI_YEARS_VALUE"
+								}
+								text_single = {
+									size = { 60 15 }
+									autoresize = no
+									align = nobaseline|right
+									fontsize = 13
+									visible = "[Not(And(GreaterThan_CFixedPoint(GetBuildOrExpandBuildingCost(BuildingType.Self, Location.Self), '(CFixedPoint)0'), GreaterThan_CFixedPoint(Select_CFixedPoint(Player.MakeScope.GetVariable('roiUseProfit').IsSet, GetBuildingTypeProfitInLocation(BuildingType.Self, Location.Self), GetBuildingTypeIncomeToOwnerInLocation(BuildingType.Self, Location.Self)), '(CFixedPoint)0')))]"
+									raw_text = "— @efficiency!"
+								}
 							}
 						}
 					}
