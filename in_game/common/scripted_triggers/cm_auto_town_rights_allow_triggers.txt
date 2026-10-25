@@ -454,6 +454,142 @@ cm_can_grant_specific_town_right_at_location = {
 			}
 		}
 	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_naval_rights }
+		custom_tooltip = {
+			text = not_forcefully_revoked_last_10_years_tt
+			scope:target = {
+				NOT = { has_variable = recently_forced_to_revoke_town_rights_variable }
+			}
+		}
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:naval_charter }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_textile_rights }
+		scope:target = { NOT = { has_town_rights = town_rights_type:flemish_cloth_industries_right } }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:textile_charter }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:textile_charter }
+		scope:target = { NOT = { has_town_rights = town_rights_type:flemish_cloth_industries_right } }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_textile_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:flemish_cloth_industries_right }
+		scope:target = { NOT = { has_town_rights = town_rights_type:royal_textile_rights } }
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:scandinavian_tar_privileges }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_naval_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:constantinopolitan_silk_monopoly_rights }
+		scope:target = {
+			custom_tooltip = {
+				text = constantinopolitan_silk_monopoly_rights_tt
+				this = location:constantinople
+				is_full_expanded_rgo = yes
+			}
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:tooling_charter }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_tooling_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_tooling_rights }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:tooling_charter }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:jewelry_charter }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_jewelry_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_jewelry_rights }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:jewelry_charter }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:naval_charter }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_naval_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:weaponry_charter }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_weaponry_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_weaponry_rights }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:weaponry_charter }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:book_charter }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_book_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_book_rights }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:book_charter }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:artisan_charter }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_artisan_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_artisan_rights }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:artisan_charter }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:brewing_charter }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_brewing_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_brewing_rights }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:brewing_charter }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:masonry_charter }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:royal_masonry_rights }
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_masonry_rights }
+		scope:target = {
+			NOT = { has_town_rights = town_rights_type:masonry_charter }
+		}
+	}
 	trigger_else = {
 		always = yes
 	}

@@ -206,6 +206,57 @@ cm_auto_town_rights_potential_passes = {
 		limit = { scope:cm_town_right = town_rights_type:ara_consulate_sea_town_rights }
 		modifier:unlocked_consulate_sea_town_right = yes
 	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:constantinopolitan_silk_monopoly_rights }
+		OR = {
+			has_or_had_tag = BYZ
+			has_or_had_tag = ROM
+		}
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_tooling_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_jewelry_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_naval_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_textile_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_weaponry_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_book_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_artisan_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_brewing_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:royal_masonry_rights }
+		has_advance = town_rights_enable
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:flemish_cloth_industries_right }
+		has_advance = flemish_cloth_making
+	}
+	trigger_else_if = {
+		limit = { scope:cm_town_right = town_rights_type:scandinavian_tar_privileges }
+		has_advance = scandinavian_tar_privileges_advance
+	}
 	trigger_else = {
 		always = yes
 	}
