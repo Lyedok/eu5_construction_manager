@@ -72,6 +72,8 @@
  cm__auto_build_list_i20_name: "@tambo! [ShowBuildingTypeName('tambo')]"
  cm__auto_build_list_i21_name: "@dock! [ShowBuildingTypeName('dock')]"
  cm__auto_build_list_i22_name: "@village_granary! [ShowBuildingTypeName('village_granary')]"
+ cm__auto_build_list_i23_name: "@construction_center! [ShowBuildingTypeName('construction_center')]"
+ cm__auto_build_list_i24_name: "@lazaretto! [ShowBuildingTypeName('lazaretto')]"
  cm__auto_build_list__enabled_name: "Aktiviert"
  cm__auto_build_list__enabled_desc: "Automatischen Ausbau für diesen Gebäudetyp umschalten."
  cm__auto_build_list__in_subjects_name: "Untertanen"
