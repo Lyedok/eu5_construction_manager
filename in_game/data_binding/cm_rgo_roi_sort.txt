@@ -1,0 +1,57 @@
+﻿# IntToFixedPoint has the wrong return type in this beta. A 16-bit model index
+# is reconstructed exactly from fixed-point literals, without that conversion.
+macro = {
+	definition = "CMRgoRoiIndexBit(Index, Divisor, Value)"
+	replace_with = "Select_CFixedPoint(IsOdd_int32(Divide_int32(Index, Divisor)), Value, '(CFixedPoint)0')"
+}
+
+macro = {
+	definition = "CMRgoRoiIndexValue(Index)"
+	replace_with = "Add_CFixedPoint(Add_CFixedPoint(Add_CFixedPoint(Add_CFixedPoint(CMRgoRoiIndexBit(Index, '(int32)1', '(CFixedPoint)1'), CMRgoRoiIndexBit(Index, '(int32)2', '(CFixedPoint)2')), Add_CFixedPoint(CMRgoRoiIndexBit(Index, '(int32)4', '(CFixedPoint)4'), CMRgoRoiIndexBit(Index, '(int32)8', '(CFixedPoint)8'))), Add_CFixedPoint(Add_CFixedPoint(CMRgoRoiIndexBit(Index, '(int32)16', '(CFixedPoint)16'), CMRgoRoiIndexBit(Index, '(int32)32', '(CFixedPoint)32')), Add_CFixedPoint(CMRgoRoiIndexBit(Index, '(int32)64', '(CFixedPoint)64'), CMRgoRoiIndexBit(Index, '(int32)128', '(CFixedPoint)128')))), Add_CFixedPoint(Add_CFixedPoint(Add_CFixedPoint(CMRgoRoiIndexBit(Index, '(int32)256', '(CFixedPoint)256'), CMRgoRoiIndexBit(Index, '(int32)512', '(CFixedPoint)512')), Add_CFixedPoint(CMRgoRoiIndexBit(Index, '(int32)1024', '(CFixedPoint)1024'), CMRgoRoiIndexBit(Index, '(int32)2048', '(CFixedPoint)2048'))), Add_CFixedPoint(Add_CFixedPoint(CMRgoRoiIndexBit(Index, '(int32)4096', '(CFixedPoint)4096'), CMRgoRoiIndexBit(Index, '(int32)8192', '(CFixedPoint)8192')), Add_CFixedPoint(CMRgoRoiIndexBit(Index, '(int32)16384', '(CFixedPoint)16384'), CMRgoRoiIndexBit(Index, '(int32)32768', '(CFixedPoint)32768')))))"
+}
+
+macro = {
+	definition = "CMRgoRoiActive"
+	replace_with = "GetPlayer.MakeScope.GetVariable('cm_rgo_roi_active').IsSet"
+}
+
+macro = {
+	definition = "CMRgoRoiReindexScope(Index)"
+	replace_with = "GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('cm_location', RawGoodLocationItem.GetLocation.MakeScope).AddScope('cm_index', MakeScopeValue(CMRgoRoiIndexValue(Index))).End"
+}
+
+macro = {
+	definition = "CMRgoRoiCaptureScope(Index)"
+	replace_with = "GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('cm_location', RawGoodLocationItem.GetLocation.MakeScope).AddScope('cm_country', GetPlayer.MakeScope).AddScope('cm_index', MakeScopeValue(CMRgoRoiIndexValue(Index))).AddScope('cm_return', MakeScopeValue(Select_CFixedPoint(GetPlayer.MakeScope.GetVariable('roiUseProfit').IsSet, RawGoodLocationItem.GetProfitPerLevel, RawGoodLocationItem.GetIncomePerLevel))).End"
+}
+
+macro = {
+	definition = "CMRgoRoiListName"
+	replace_with = "Select_CString(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_buffer_alt').IsSet, Select_CString(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_descending').IsSet, 'cm_rgo_roi_order_desc_alt', 'cm_rgo_roi_order_asc_alt'), Select_CString(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_descending').IsSet, 'cm_rgo_roi_order_desc', 'cm_rgo_roi_order_asc'))"
+}
+
+macro = {
+	definition = "CMRgoRoiCacheCurrent"
+	replace_with = "And(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_fresh').IsSet, Or(And(GetPlayer.MakeScope.GetVariable('roiUseProfit').IsSet, GetPlayer.MakeScope.GetVariable('cm_rgo_roi_profit').IsSet), And(Not(GetPlayer.MakeScope.GetVariable('roiUseProfit').IsSet), Not(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_profit').IsSet))))"
+}
+
+macro = {
+	definition = "CMRgoRoiNeedsWork"
+	replace_with = "Or(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_dirty').IsSet, GetPlayer.MakeScope.GetVariable('cm_rgo_roi_collecting').IsSet)"
+}
+
+macro = {
+	definition = "CMRgoRoiReady"
+	replace_with = "And(CMRgoRoiActive, And(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_ready').IsSet, EqualTo_int32(GetDataModelSize(GetPlayer.MakeScope.GetList(CMRgoRoiListName)), GetDataModelSize(ExpandRawGoodsLateralView.GetRawGoodLocationItems))))"
+}
+
+# A source model can shrink before the next collection pass finishes.
+macro = {
+	definition = "CMRgoRoiSourceIndex"
+	replace_with = "Max_int32('(int32)0', FixedPointToInt(GetPlayer.MakeScope.GetVariableFromVariableMap('cm_rgo_roi_index', Scope.GetLocation.MakeScope).GetValueWithDefault('(CFixedPoint)0')))"
+}
+
+macro = {
+	definition = "CMRgoRoiSourceInRange"
+	replace_with = "LessThan_int32(CMRgoRoiSourceIndex, GetDataModelSize(ExpandRawGoodsLateralView.GetRawGoodLocationItems))"
+}

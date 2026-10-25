@@ -1,0 +1,333 @@
+﻿# One valuation per location and game day; both sort directions share that cache.
+cm_rgo_roi_toggle = {
+	effect = {
+		if = {
+			limit = { exists = var:cm_rgo_roi_active }
+			if = {
+				limit = { exists = var:cm_rgo_roi_descending }
+				remove_variable = cm_rgo_roi_descending
+			} else = {
+				set_variable = { name = cm_rgo_roi_descending value = yes }
+			}
+		} else = {
+			set_variable = { name = cm_rgo_roi_active value = yes }
+			remove_variable = cm_rgo_roi_descending
+		}
+	}
+}
+
+# Native sorting changes source indexes, but does not discard valuations or orders.
+cm_rgo_roi_stop = {
+	effect = {
+		remove_variable = cm_rgo_roi_active
+		remove_variable = cm_rgo_roi_descending
+	}
+}
+
+# Called once on opening the panel, including when Income is selected.
+cm_rgo_roi_open = {
+	effect = {
+		remove_variable = cm_rgo_roi_ready
+		remove_variable = cm_rgo_roi_cached
+		remove_variable = cm_rgo_roi_collecting
+		remove_variable = cm_rgo_roi_fresh
+		remove_variable = cm_rgo_roi_profit
+		remove_variable = cm_rgo_roi_published
+		remove_variable = cm_rgo_roi_resort
+		remove_variable = cm_rgo_roi_buffer_alt
+		set_variable = { name = cm_rgo_roi_count value = 0 }
+		set_variable = { name = cm_rgo_roi_seen value = 0 }
+		set_variable = { name = cm_rgo_roi_generation value = 0 }
+		set_variable = { name = cm_rgo_roi_value_generation value = 0 }
+		clear_variable_list = cm_rgo_roi_valid
+		clear_variable_list = cm_rgo_roi_invalid
+		clear_variable_list = cm_rgo_roi_order_asc
+		clear_variable_list = cm_rgo_roi_order_desc
+		clear_variable_list = cm_rgo_roi_order_asc_alt
+		clear_variable_list = cm_rgo_roi_order_desc_alt
+		clear_variable_map = cm_rgo_roi_index
+		clear_variable_map = cm_rgo_roi_generation
+		clear_variable_map = cm_rgo_roi_value_generation
+		clear_variable_map = cm_rgo_roi_cost
+		clear_variable_map = cm_rgo_roi_return
+		set_variable = { name = cm_rgo_roi_dirty value = yes }
+	}
+}
+
+cm_rgo_roi_request = {
+	effect = {
+		set_variable = { name = cm_rgo_roi_dirty value = yes }
+		remove_variable = cm_rgo_roi_ready
+	}
+}
+
+# Source-only permutations update addresses without changing either ROI order.
+cm_rgo_roi_reindex = {
+	saved_scopes = { cm_location cm_index }
+	effect = {
+		if = {
+			limit = {
+				NOT = { exists = var:cm_rgo_roi_dirty }
+				NOT = { exists = var:cm_rgo_roi_collecting }
+			}
+			if = {
+				limit = {
+					is_key_in_variable_map = { name = cm_rgo_roi_generation target = scope:cm_location }
+					"variable_map(cm_rgo_roi_generation|scope:cm_location)" = var:cm_rgo_roi_published
+				}
+				if = {
+					limit = { NOT = { "variable_map(cm_rgo_roi_index|scope:cm_location)" = scope:cm_index } }
+					remove_from_variable_map = { name = cm_rgo_roi_index key = scope:cm_location }
+					add_to_variable_map = { name = cm_rgo_roi_index key = scope:cm_location value = scope:cm_index }
+				}
+			} else = {
+				# A new member requires a complete filtered snapshot.
+				set_variable = { name = cm_rgo_roi_dirty value = yes }
+				remove_variable = cm_rgo_roi_ready
+			}
+		}
+	}
+}
+
+# Valuation refresh keeps the published order visible while collecting new values.
+cm_rgo_roi_refresh = {
+	effect = {
+		set_variable = { name = cm_rgo_roi_dirty value = yes }
+	}
+}
+
+cm_rgo_roi_begin = {
+	effect = {
+		if = {
+			limit = {
+				NOT = { exists = var:cm_rgo_roi_collecting }
+				exists = var:cm_rgo_roi_dirty
+			}
+			remove_variable = cm_rgo_roi_dirty
+			remove_variable = cm_rgo_roi_resort
+			set_variable = { name = cm_rgo_roi_collecting value = yes }
+			set_variable = { name = cm_rgo_roi_seen value = 0 }
+			if = {
+				limit = {
+					OR = {
+						NOT = { exists = var:cm_rgo_roi_fresh }
+						AND = { exists = var:roiUseProfit NOT = { exists = var:cm_rgo_roi_profit } }
+						AND = { NOT = { exists = var:roiUseProfit } exists = var:cm_rgo_roi_profit }
+					}
+				}
+				change_variable = { name = cm_rgo_roi_value_generation add = 1 }
+				set_variable = { name = cm_rgo_roi_fresh value = yes days = 1 }
+				if = {
+					limit = { exists = var:roiUseProfit }
+					set_variable = { name = cm_rgo_roi_profit value = yes }
+				} else = {
+					remove_variable = cm_rgo_roi_profit
+				}
+			}
+			change_variable = { name = cm_rgo_roi_generation add = 1 }
+			clear_variable_list = cm_rgo_roi_valid
+			clear_variable_list = cm_rgo_roi_invalid
+		}
+	}
+}
+
+cm_rgo_roi_capture = {
+	saved_scopes = { cm_location cm_country cm_index cm_return }
+	effect = {
+		if = {
+			limit = { exists = var:cm_rgo_roi_collecting }
+			if = {
+				limit = {
+					is_key_in_variable_map = { name = cm_rgo_roi_generation target = scope:cm_location }
+					"variable_map(cm_rgo_roi_generation|scope:cm_location)" = var:cm_rgo_roi_generation
+				}
+				# Retry if the source was reordered during collection.
+				if = {
+					limit = { NOT = { "variable_map(cm_rgo_roi_index|scope:cm_location)" = scope:cm_index } }
+					set_variable = { name = cm_rgo_roi_dirty value = yes }
+					remove_variable = cm_rgo_roi_ready
+				}
+			} else = {
+				# Reindexing the same membership can keep both existing orders.
+				if = {
+					limit = {
+						OR = {
+							NOT = { is_key_in_variable_map = { name = cm_rgo_roi_generation target = scope:cm_location } }
+							NOT = { "variable_map(cm_rgo_roi_generation|scope:cm_location)" = var:cm_rgo_roi_published }
+						}
+					}
+					set_variable = { name = cm_rgo_roi_resort value = yes }
+				}
+				# Keep stable row addresses untouched during daily valuation refreshes.
+				if = {
+					limit = {
+						OR = {
+							NOT = { is_key_in_variable_map = { name = cm_rgo_roi_index target = scope:cm_location } }
+							NOT = { "variable_map(cm_rgo_roi_index|scope:cm_location)" = scope:cm_index }
+						}
+					}
+					remove_from_variable_map = { name = cm_rgo_roi_index key = scope:cm_location }
+					add_to_variable_map = { name = cm_rgo_roi_index key = scope:cm_location value = scope:cm_index }
+				}
+				remove_from_variable_map = { name = cm_rgo_roi_generation key = scope:cm_location }
+				add_to_variable_map = { name = cm_rgo_roi_generation key = scope:cm_location value = var:cm_rgo_roi_generation }
+				change_variable = { name = cm_rgo_roi_seen add = 1 }
+				if = {
+					limit = {
+						OR = {
+							NOT = { is_key_in_variable_map = { name = cm_rgo_roi_value_generation target = scope:cm_location } }
+							NOT = { "variable_map(cm_rgo_roi_value_generation|scope:cm_location)" = var:cm_rgo_roi_value_generation }
+						}
+					}
+					remove_from_variable_map = { name = cm_rgo_roi_cost key = scope:cm_location }
+					add_to_variable_map = { name = cm_rgo_roi_cost key = scope:cm_location value = glorpui_rgo_expand_cost }
+					remove_from_variable_map = { name = cm_rgo_roi_return key = scope:cm_location }
+					add_to_variable_map = { name = cm_rgo_roi_return key = scope:cm_location value = scope:cm_return }
+					remove_from_variable_map = { name = cm_rgo_roi_value_generation key = scope:cm_location }
+					add_to_variable_map = { name = cm_rgo_roi_value_generation key = scope:cm_location value = var:cm_rgo_roi_value_generation }
+					set_variable = { name = cm_rgo_roi_resort value = yes }
+				}
+				if = {
+					limit = {
+						"variable_map(cm_rgo_roi_cost|scope:cm_location)" > 0
+						"variable_map(cm_rgo_roi_return|scope:cm_location)" > 0
+					}
+					add_to_variable_list = { name = cm_rgo_roi_valid target = scope:cm_location }
+				} else = {
+					add_to_variable_list = { name = cm_rgo_roi_invalid target = scope:cm_location }
+				}
+			}
+		}
+	}
+}
+
+cm_rgo_roi_finish = {
+	saved_scopes = { cm_complete cm_overfull }
+	effect = {
+		if = {
+			limit = { exists = var:cm_rgo_roi_collecting }
+			if = {
+				limit = {
+					NOT = { exists = var:cm_rgo_roi_dirty }
+					scope:cm_complete = yes
+					exists = var:cm_rgo_roi_fresh
+					OR = {
+						AND = { exists = var:roiUseProfit exists = var:cm_rgo_roi_profit }
+						AND = { NOT = { exists = var:roiUseProfit } NOT = { exists = var:cm_rgo_roi_profit } }
+					}
+				}
+				if = {
+					limit = {
+						OR = {
+							exists = var:cm_rgo_roi_resort
+							NOT = { exists = var:cm_rgo_roi_cached }
+							NOT = { var:cm_rgo_roi_count = var:cm_rgo_roi_seen }
+						}
+					}
+					save_scope_as = cm_roi_country
+					# Rebuild the inactive buffer, then publish it in one variable change.
+					if = {
+						limit = { exists = var:cm_rgo_roi_buffer_alt }
+						clear_variable_list = cm_rgo_roi_order_asc
+						clear_variable_list = cm_rgo_roi_order_desc
+					} else = {
+						clear_variable_list = cm_rgo_roi_order_asc_alt
+						clear_variable_list = cm_rgo_roi_order_desc_alt
+					}
+					# Build both directions from cached costs/returns; toggling only selects a list.
+					ordered_in_list = {
+						variable = cm_rgo_roi_valid
+						order_by = {
+							scope:cm_roi_country = {
+								value = "variable_map(cm_rgo_roi_cost|prev)"
+								divide = "variable_map(cm_rgo_roi_return|prev)"
+								multiply = -1
+							}
+						}
+						max = var:cm_rgo_roi_seen
+						check_range_bounds = no
+						save_scope_as = cm_roi_location
+						scope:cm_roi_country = {
+							if = {
+								limit = { exists = var:cm_rgo_roi_buffer_alt }
+								add_to_variable_list = { name = cm_rgo_roi_order_asc target = scope:cm_roi_location }
+							} else = {
+								add_to_variable_list = { name = cm_rgo_roi_order_asc_alt target = scope:cm_roi_location }
+							}
+						}
+					}
+					ordered_in_list = {
+						variable = cm_rgo_roi_valid
+						order_by = {
+							scope:cm_roi_country = {
+								value = "variable_map(cm_rgo_roi_cost|prev)"
+								divide = "variable_map(cm_rgo_roi_return|prev)"
+							}
+						}
+						max = var:cm_rgo_roi_seen
+						check_range_bounds = no
+						save_scope_as = cm_roi_location
+						scope:cm_roi_country = {
+							if = {
+								limit = { exists = var:cm_rgo_roi_buffer_alt }
+								add_to_variable_list = { name = cm_rgo_roi_order_desc target = scope:cm_roi_location }
+							} else = {
+								add_to_variable_list = { name = cm_rgo_roi_order_desc_alt target = scope:cm_roi_location }
+							}
+						}
+					}
+					ordered_in_list = {
+						variable = cm_rgo_roi_invalid
+						order_by = {
+							scope:cm_roi_country = {
+								value = "variable_map(cm_rgo_roi_index|prev)"
+								multiply = -1
+							}
+						}
+						max = var:cm_rgo_roi_seen
+						check_range_bounds = no
+						save_scope_as = cm_roi_location
+						scope:cm_roi_country = {
+							if = {
+								limit = { exists = var:cm_rgo_roi_buffer_alt }
+								add_to_variable_list = { name = cm_rgo_roi_order_asc target = scope:cm_roi_location }
+								add_to_variable_list = { name = cm_rgo_roi_order_desc target = scope:cm_roi_location }
+							} else = {
+								add_to_variable_list = { name = cm_rgo_roi_order_asc_alt target = scope:cm_roi_location }
+								add_to_variable_list = { name = cm_rgo_roi_order_desc_alt target = scope:cm_roi_location }
+							}
+						}
+					}
+					if = {
+						limit = { exists = var:cm_rgo_roi_buffer_alt }
+						remove_variable = cm_rgo_roi_buffer_alt
+					} else = {
+						set_variable = { name = cm_rgo_roi_buffer_alt value = yes }
+					}
+					set_variable = { name = cm_rgo_roi_cached value = yes }
+				}
+				set_variable = { name = cm_rgo_roi_count value = var:cm_rgo_roi_seen }
+				set_variable = { name = cm_rgo_roi_published value = var:cm_rgo_roi_generation }
+				set_variable = { name = cm_rgo_roi_ready value = yes }
+				remove_variable = cm_rgo_roi_collecting
+			} else_if = {
+				limit = {
+					OR = {
+						exists = var:cm_rgo_roi_dirty
+						scope:cm_overfull = yes
+						NOT = { exists = var:cm_rgo_roi_fresh }
+						AND = { exists = var:roiUseProfit NOT = { exists = var:cm_rgo_roi_profit } }
+						AND = { NOT = { exists = var:roiUseProfit } exists = var:cm_rgo_roi_profit }
+					}
+				}
+				# Only a source change makes published row indexes unsafe.
+				if = {
+					limit = { OR = { exists = var:cm_rgo_roi_dirty scope:cm_overfull = yes } }
+					remove_variable = cm_rgo_roi_ready
+				}
+				set_variable = { name = cm_rgo_roi_dirty value = yes }
+				remove_variable = cm_rgo_roi_collecting
+			}
+		}
+	}
+}

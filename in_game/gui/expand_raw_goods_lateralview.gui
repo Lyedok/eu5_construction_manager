@@ -433,48 +433,50 @@
 				}
 
 				blockoverride "sort_buttons_filtered_list" {
-					sort_by_key_button = {
+					cm_rgo_sort_by_key_button = {
 						name = "name"
 						layoutpolicy_vertical = expanding
 						size = { 65 -1 }
 					}
 	
-					sort_by_key_button = {
+					cm_rgo_sort_by_key_button = {
 						name = "employment"
 						layoutpolicy_vertical = expanding
 						size = { 75 -1 }
 					}
-					sort_by_key_button = {
+					cm_rgo_sort_by_key_button = {
 						name = "population"
 						using = layoutpolicy_expanding
 						# size = { 75 -1 }
 					}
 
-					sort_by_key_button = {
+					cm_rgo_sort_by_key_button = {
 						name = "profit"
 						layoutpolicy_vertical = expanding
 						size = { 45 -1 }
 					}
 
-					sort_by_key_button = {
+					cm_rgo_sort_by_key_button = {
 						name = "income"
 						layoutpolicy_vertical = expanding
 						size = { 45 -1 }
 					}
 
-					sort_by_key_button = {
+					cm_rgo_roi_sort_button = {}
+
+					cm_rgo_sort_by_key_button = {
 						name = "market_price"
 						layoutpolicy_vertical = expanding
 						size = { 40 -1 }
 					}
 
-					sort_by_key_button = {
+					cm_rgo_sort_by_key_button = {
 						name = "market_price_diff"
 						layoutpolicy_vertical = expanding
 						size = { 40 -1 }
 					}
 
-					sort_by_key_button = {
+					cm_rgo_sort_by_key_button = {
 						name = "number_building"
 						layoutpolicy_vertical = expanding
 						size = { 125 -1 }
@@ -489,26 +491,33 @@
 					text = "EXPAND_RAW_GOODS_SCROLL_LIST_EMPTY"
 				}
 
+				cm_rgo_roi_sort_driver = {}
+
 				blockoverride "scroll_list_layout" {
-					fixedgridbox = {
-						addrow = 56
-						addcolumn = 100%
-						datamodel = "[ExpandRawGoodsLateralView.GetRawGoodLocationItems]"
-						item = {
-							widget = {
-								size = { 100% 56 }
+					vbox = {
+						layoutpolicy_horizontal = expanding
+						fixedgridbox = {
+							visible = "[Not(CMRgoRoiReady)]"
+							addrow = 56
+							addcolumn = 100%
+							datamodel = "[ExpandRawGoodsLateralView.GetRawGoodLocationItems]"
+							item = {
 								widget = {
-									size = { 99% 54 }
-									parentanchor = center
-									hbox = {
-										using = layoutpolicy_expanding
-										using = bg_cabinet_card_frame
-										margin = {5 5}
-										using = build_rgo_entry
+									size = { 100% 56 }
+									widget = {
+										size = { 99% 54 }
+										parentanchor = center
+										hbox = {
+											using = layoutpolicy_expanding
+											using = bg_cabinet_card_frame
+											margin = {5 5}
+											using = build_rgo_entry
+										}
 									}
 								}
 							}
 						}
+						cm_rgo_roi_sorted_list = {}
 					}
 				}
 			}

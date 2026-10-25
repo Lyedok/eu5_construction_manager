@@ -1,0 +1,202 @@
+﻿types cm_rgo_roi_sort {
+	# Local copy of the native header action so a standard sort exits ROI mode.
+	type cm_rgo_sort_by_key_button = button {
+		datacontext = "[FilteredSortedList.GetSortKeyButton(PdxGuiWidget.Self)]"
+		down = "[And(SortKey.IsSortedBy, Not(CMRgoRoiActive))]"
+		background = {
+			visible = "[IsOdd_int32(PdxGuiWidget.GetIndexInParent)]"
+			using = color_black_texture
+			blend_mode = multiply
+			alpha = 0.2
+		}
+		action_tooltip = {
+			title = "[SortKey.GetTooltip]"
+			on_action = "[GetScriptedGui('cm_rgo_roi_stop').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+			on_action = "[SortKey.Sort]"
+		}
+		action_tooltip = {
+			click_type = right
+			title = "TOGGLE_ALL_LIST"
+			visible = "[FilteredSortedList.ToggleAllEnabled]"
+			on_action = "[FilteredSortedList.ToggleAll]"
+		}
+		tooltipwidget = { BasicFunctionalTooltip = {} }
+		onmousehierarchyenter = "[SortKey.OnMouseHierarchyEnter]"
+		onmousehierarchyleave = "[SortKey.OnMouseHierarchyLeave]"
+		widget = {
+			size = { 30 20 }
+			parentanchor = center
+			alwaystransparent = yes
+			icon = {
+				size = { 20 20 }
+				texture = "[SortKey.GetIcon]"
+				texture_density = 2
+				modify_texture = { visible = "[Or(Not(SortKey.IsSortedBy), CMRgoRoiActive)]" using = color_sortby_off }
+				modify_texture = { visible = "[And(SortKey.IsSortedBy, Not(CMRgoRoiActive))]" using = color_sortby_on }
+			}
+			icon = {
+				size = { 8 8 }
+				position = { 22 0 }
+				texture = "gfx/interface/icons/flat_icons/arrow_sortby.dds"
+				texture_density = 2
+				visible = "[Or(Not(SortKey.IsSortedBy), Not(SortKey.IsSortedInDescending))]"
+			}
+			icon = {
+				size = { 8 8 }
+				position = { 22 12 }
+				texture = "gfx/interface/icons/flat_icons/arrow_sortby.dds"
+				texture_density = 2
+				mirror = vertical
+				visible = "[Or(Not(SortKey.IsSortedBy), SortKey.IsSortedInDescending)]"
+			}
+		}
+	}
+
+	type cm_rgo_roi_sort_button = button {
+		size = { 40 -1 }
+		layoutpolicy_vertical = expanding
+		using = bg_sortby_texture
+		down = "[CMRgoRoiActive]"
+		action_tooltip = {
+			title = "GLORP_UI_BUILDING_ROI_TT_TITLE"
+			description = "GLORP_UI_RGO_ROI_TT_DESC"
+			on_action = "[GetScriptedGui('cm_rgo_roi_toggle').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+		}
+		tooltipwidget = { BasicFunctionalTooltip = {} }
+		text_single = {
+			size = { 30 20 }
+			parentanchor = center
+			align = center|nobaseline
+			fontsize = 13
+			position = { -4 0 }
+			raw_text = "ROI"
+			alwaystransparent = yes
+		}
+		icon = {
+			size = { 8 8 }
+			parentanchor = right|vcenter
+			position = { -1 -5 }
+			texture = "gfx/interface/icons/flat_icons/arrow_sortby.dds"
+			texture_density = 2
+			visible = "[Not(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_descending').IsSet)]"
+			alwaystransparent = yes
+		}
+		icon = {
+			size = { 8 8 }
+			parentanchor = right|vcenter
+			position = { -1 5 }
+			texture = "gfx/interface/icons/flat_icons/arrow_sortby.dds"
+			texture_density = 2
+			mirror = vertical
+			visible = "[GetPlayer.MakeScope.GetVariable('cm_rgo_roi_descending').IsSet]"
+			alwaystransparent = yes
+		}
+	}
+
+	type cm_rgo_roi_sort_driver = widget {
+		size = { 0 0 }
+		ignore_layout = yes
+		visible_at_creation = no
+		visible = "[GetPlayer.Exists]"
+		state = {
+			name = _show
+			on_finish = "[GetScriptedGui('cm_rgo_roi_open').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+		}
+		# Only run animation passes while a snapshot is actually being rebuilt.
+		widget = {
+			visible_at_creation = no
+			visible = "[CMRgoRoiNeedsWork]"
+			state = { name = _hide }
+			state = {
+				name = _show
+				on_finish = "[GetScriptedGui('cm_rgo_roi_begin').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+				next = cm_rgo_roi_collect_pass
+			}
+			state = {
+				name = cm_rgo_roi_begin_pass
+				duration = 0.01
+				on_finish = "[GetScriptedGui('cm_rgo_roi_begin').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+				next = cm_rgo_roi_collect_pass
+			}
+			state = {
+				name = cm_rgo_roi_collect_pass
+				duration = 0.01
+				on_finish = "[PdxGuiTriggerAllAnimations('cm_rgo_roi_capture_rows')]"
+				next = cm_rgo_roi_finish_pass
+			}
+			state = {
+				name = cm_rgo_roi_finish_pass
+				duration = 0.01
+				on_finish = "[GetScriptedGui('cm_rgo_roi_finish').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('cm_complete', MakeScopeBool(EqualTo_int32(FixedPointToInt(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_seen').GetValueWithDefault('(CFixedPoint)0')), GetDataModelSize(ExpandRawGoodsLateralView.GetRawGoodLocationItems)))).AddScope('cm_overfull', MakeScopeBool(GreaterThan_int32(FixedPointToInt(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_seen').GetValueWithDefault('(CFixedPoint)0')), GetDataModelSize(ExpandRawGoodsLateralView.GetRawGoodLocationItems)))).End)]"
+				next = cm_rgo_roi_begin_pass
+			}
+		}
+		# One cheap freshness/settings check for the entire panel.
+		widget = {
+			visible_at_creation = no
+			visible = "[And(Not(CMRgoRoiNeedsWork), And(CMRgoRoiActive, Not(CMRgoRoiCacheCurrent)))]"
+			state = {
+				name = _show
+				on_finish = "[GetScriptedGui('cm_rgo_roi_refresh').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+			}
+		}
+		widget = {
+			visible_at_creation = no
+			visible = "[And(Not(CMRgoRoiNeedsWork), Not(EqualTo_int32(FixedPointToInt(GetPlayer.MakeScope.GetVariable('cm_rgo_roi_count').GetValueWithDefault('(CFixedPoint)0')), GetDataModelSize(ExpandRawGoodsLateralView.GetRawGoodLocationItems))))]"
+			state = {
+				name = _show
+				on_finish = "[GetScriptedGui('cm_rgo_roi_request').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+			}
+		}
+		# Retain the native filtered model. Idle observers only compare membership/indexes.
+		widget = {
+			datamodel = "[ExpandRawGoodsLateralView.GetRawGoodLocationItems]"
+			item = {
+				widget = {
+					state = {
+						name = cm_rgo_roi_capture_rows
+						on_finish = "[GetScriptedGui('cm_rgo_roi_capture').Execute(CMRgoRoiCaptureScope(PdxGuiWidget.GetIndexInDataModel))]"
+					}
+					widget = {
+						visible_at_creation = no
+						visible = "[And(Not(CMRgoRoiNeedsWork), Or(Not(EqualTo_int32(FixedPointToInt(GetPlayer.MakeScope.GetVariableFromVariableMap('cm_rgo_roi_index', RawGoodLocationItem.GetLocation.MakeScope).GetValueWithDefault('(CFixedPoint)-1')), PdxGuiWidget.AccessParent.GetIndexInDataModel)), Not(EqualTo_CFixedPoint(GetPlayer.MakeScope.GetVariableFromVariableMap('cm_rgo_roi_generation', RawGoodLocationItem.GetLocation.MakeScope).GetValueWithDefault('(CFixedPoint)-1'), GetPlayer.MakeScope.GetVariable('cm_rgo_roi_published').GetValueWithDefault('(CFixedPoint)-2')))))]"
+						state = {
+							name = _show
+							on_finish = "[GetScriptedGui('cm_rgo_roi_reindex').Execute(CMRgoRoiReindexScope(PdxGuiWidget.AccessParent.GetIndexInDataModel))]"
+						}
+					}
+				}
+			}
+		}
+	}
+
+	# Use the native grid and native row objects, in the order of the sorted location list.
+	type cm_rgo_roi_sorted_list = fixedgridbox {
+		visible = "[CMRgoRoiReady]"
+		visible_at_creation = no
+		addrow = 56
+		addcolumn = 100%
+		datamodel = "[GetPlayer.MakeScope.GetList(CMRgoRoiListName)]"
+		item = {
+			widget = {
+				size = { 100% 56 }
+				datamodel = "[DataModelSubSpan(ExpandRawGoodsLateralView.GetRawGoodLocationItems, Select_int32(CMRgoRoiSourceInRange, CMRgoRoiSourceIndex, '(int32)0'), Select_int32(CMRgoRoiSourceInRange, '(int32)1', '(int32)0'))]"
+				item = {
+					widget = {
+						size = { 100% 56 }
+						widget = {
+							size = { 99% 54 }
+							parentanchor = center
+							hbox = {
+								using = layoutpolicy_expanding
+								using = bg_cabinet_card_frame
+								margin = {5 5}
+								using = build_rgo_entry
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
